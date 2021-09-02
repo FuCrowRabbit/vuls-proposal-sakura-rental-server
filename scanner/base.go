@@ -699,9 +699,15 @@ func (l *base) scanWordPress() error {
 		return nil
 	}
 	l.log.Info("Scanning WordPress...")
-	cmd := fmt.Sprintf("sudo -u %s -i -- %s cli version --allow-root",
-		l.ServerInfo.WordPress.OSUser,
-		l.ServerInfo.WordPress.CmdPath)
+	cmd := ""
+	if l.ServerInfo.WordPress.EmptyOsUser() {
+		cmd = fmt.Sprintf("%s cli version",
+			l.ServerInfo.WordPress.CmdPath)
+	} else {
+		cmd = fmt.Sprintf("sudo -u %s -i -- %s cli version --allow-root",
+			l.ServerInfo.WordPress.OSUser,
+			l.ServerInfo.WordPress.CmdPath)
+	}
 	if r := exec(l.ServerInfo, cmd, noSudo); !r.isSuccess() {
 		return xerrors.Errorf("Failed to exec `%s`. Check the OS user, command path of wp-cli, DocRoot and permission: %#v", cmd, l.ServerInfo.WordPress)
 	}
@@ -743,10 +749,17 @@ func (l *base) detectWordPress() (*models.WordPressPackages, error) {
 }
 
 func (l *base) detectWpCore() (string, error) {
-	cmd := fmt.Sprintf("sudo -u %s -i -- %s core version --path=%s --allow-root",
-		l.ServerInfo.WordPress.OSUser,
-		l.ServerInfo.WordPress.CmdPath,
-		l.ServerInfo.WordPress.DocRoot)
+	cmd := ""
+	if l.ServerInfo.WordPress.EmptyOsUser() {
+		cmd = fmt.Sprintf("%s core version --path=%s",
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	} else {
+		cmd = fmt.Sprintf("sudo -u %s -i -- %s core version --path=%s --allow-root",
+			l.ServerInfo.WordPress.OSUser,
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	}
 
 	r := exec(l.ServerInfo, cmd, noSudo)
 	if !r.isSuccess() {
@@ -756,10 +769,17 @@ func (l *base) detectWpCore() (string, error) {
 }
 
 func (l *base) detectWpThemes() ([]models.WpPackage, error) {
-	cmd := fmt.Sprintf("sudo -u %s -i -- %s theme list --path=%s --format=json --quiet --allow-root",
-		l.ServerInfo.WordPress.OSUser,
-		l.ServerInfo.WordPress.CmdPath,
-		l.ServerInfo.WordPress.DocRoot)
+	cmd := ""
+	if l.ServerInfo.WordPress.EmptyOsUser() {
+		cmd = fmt.Sprintf("%s theme list --path=%s --format=json --quiet",
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	} else {
+		cmd = fmt.Sprintf("sudo -u %s -i -- %s theme list --path=%s --format=json --quiet --allow-root",
+			l.ServerInfo.WordPress.OSUser,
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	}
 
 	var themes []models.WpPackage
 	r := exec(l.ServerInfo, cmd, noSudo)
@@ -777,10 +797,17 @@ func (l *base) detectWpThemes() ([]models.WpPackage, error) {
 }
 
 func (l *base) detectWpPlugins() ([]models.WpPackage, error) {
-	cmd := fmt.Sprintf("sudo -u %s -i -- %s plugin list --path=%s --format=json --quiet --allow-root",
-		l.ServerInfo.WordPress.OSUser,
-		l.ServerInfo.WordPress.CmdPath,
-		l.ServerInfo.WordPress.DocRoot)
+	cmd := ""
+	if l.ServerInfo.WordPress.EmptyOsUser() {
+		cmd = fmt.Sprintf("%s plugin list --path=%s --format=json --quiet",
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	} else {
+		cmd = fmt.Sprintf("sudo -u %s -i -- %s plugin list --path=%s --format=json --quiet --allow-root",
+			l.ServerInfo.WordPress.OSUser,
+			l.ServerInfo.WordPress.CmdPath,
+			l.ServerInfo.WordPress.DocRoot)
+	}
 
 	var plugins []models.WpPackage
 	r := exec(l.ServerInfo, cmd, noSudo)

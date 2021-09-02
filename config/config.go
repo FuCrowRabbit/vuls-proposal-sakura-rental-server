@@ -270,6 +270,11 @@ func (cnf WordPressConf) IsZero() bool {
 	return cnf.OSUser == "" && cnf.DocRoot == "" && cnf.CmdPath == ""
 }
 
+// EmptyOsUser return  OSUser is not specified in config.toml
+func (cnf WordPressConf) EmptyOsUser() bool {
+	return cnf.OSUser == ""
+}
+
 // GitHubConf is used for GitHub Security Alerts
 type GitHubConf struct {
 	Token                 string `json:"-"`
